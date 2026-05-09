@@ -43,7 +43,7 @@ import (
 
 const (
 	// cookie字段名称 & default value
-	cookieNameLoginState = "state"
+	cookieNameLoginState = "openfuyaoLoginState"
 	cookieNameSessionID  = "sessionID"
 	cookieNameWsID       = "wsID"
 	cookieNameIdpLogin   = "idpLogin"
