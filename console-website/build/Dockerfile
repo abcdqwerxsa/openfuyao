@@ -6,7 +6,7 @@
 # You can use this software according to the terms and conditions of the Mulan PSL v2.
 # You may obtain a copy of Mulan PSL v2 at:
 #          http://license.coscl.org.cn/MulanPSL2
-# THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+# THIS SOFTWARE IS PROVIDED ON AN "AS IS' BASIS, WITHOUT WARRANTIES OF ANY KIND,
 # EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
 # MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 # See the Mulan PSL v2 for more details.
@@ -15,25 +15,18 @@
 ARG NODE_IMAGE=node:20.11.0-alpine
 ARG NGINX_IMAGE=openeuler/nginx:1.21.5-oe2203lts
 
-# stage 1: build (always use amd64 to avoid esbuild crash under QEMU on arm64)
-FROM --platform=linux/amd64 ${NODE_IMAGE} AS build
+# stage 1: build
+FROM ${NODE_IMAGE} AS build
 
 WORKDIR /app
 
 ARG NPM_CONFIG_REGISTRY
 
-# instal dependenies
-RUN --mount=source=package.json,target=package.json \
-    --mount=source=package-lock.json,target=package-lock.json \
-    npm ci
+COPY package.json package-lock.json ./
+RUN npm ci
 
-# build project
-RUN --mount=source=package.json,target=package.json \
-    --mount=source=package-lock.json,target=package-lock.json \
-    --mount=source=index.html,target=index.html \
-    --mount=source=vite.config.js,target=vite.config.js \
-    --mount=source=src,target=src \
-    npm run build
+COPY . .
+RUN npm run build
 
 # stage 2: final
 FROM ${NGINX_IMAGE} AS final
