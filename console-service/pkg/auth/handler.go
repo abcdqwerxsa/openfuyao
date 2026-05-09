@@ -261,13 +261,16 @@ func (h *Handler) callbackHandler(req *restful.Request, resp *restful.Response) 
 	setCookie(cookieNameWsID, wsId, time.Time{}, resp)
 
 	// read referrer URL from cookie and redirect to original page
-	redirectURL := getConsoleRootPage(req.Request)
-	referrerCookie, err := req.Request.Cookie(constant.CookieNameReferrer)
-	if err == nil && referrerCookie.Value != "" {
-		redirectURL = referrerCookie.Value
-		clearCookie(constant.CookieNameReferrer, resp)
-	}
-	http.Redirect(resp.ResponseWriter, req.Request, redirectURL, http.StatusFound)
+		redirectURL := getConsoleRootPage(req.Request)
+		referrerCookie, err := req.Request.Cookie(constant.CookieNameReferrer)
+		if err == nil && referrerCookie.Value != "" {
+			zlog.Infof("Callback redirect using referrer cookie: %s", referrerCookie.Value)
+			redirectURL = referrerCookie.Value
+			clearCookie(constant.CookieNameReferrer, resp)
+		} else {
+			zlog.Infof("Callback redirect using getConsoleRootPage: %s (X-Forwarded-Prefix: %s)", redirectURL, req.Request.Header.Get("X-Forwarded-Prefix"))
+		}
+		http.Redirect(resp.ResponseWriter, req.Request, redirectURL, http.StatusFound)
 }
 
 func generateErrorRespText(req *restful.Request) (string, error) {
