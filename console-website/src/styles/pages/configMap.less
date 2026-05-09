@@ -1,0 +1,43 @@
+@import '@/styles/common.less';
+
+  /** yaml**/
+  .yaml_card{
+    padding: 32px 32px 25px 32px;
+    h3{
+      color:@title-color;
+      margin:0;
+      font-size: 16px;
+      line-height: 22px;
+      font-weight: bold;
+    }
+  .yaml_flex_box{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    .yaml_tools{
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: flex-start;
+      .tool_word_group{
+        margin-right: 24px;
+        font-size: 14px;
+        line-height: 22px;
+        cursor: pointer;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        svg{
+          margin-right: 3px;
+        }
+        span{
+          color:@icon-normal_color;
+        }
+      }
+      .tool_word_group:last-child{
+        margin-right: 0;
+      }
+    }
+  }
+}
