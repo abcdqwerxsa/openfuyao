@@ -12,9 +12,8 @@
 # See the Mulan PSL v2 for more details.
 #######################################################################
 
-ARG BUILDER=golang
 ARG BUILDER_VERSION=1.24.5
-ARG BUILDER_IMAGE=cr.openfuyao.cn/openfuyao/builder/$BUILDER:$BUILDER_VERSION
+ARG BUILDER_IMAGE=golang:$BUILDER_VERSION
 ARG PKG=./cmd
 
 ARG BASE_TYPE=static
@@ -22,6 +21,12 @@ ARG BASE_IMAGE=cr.openfuyao.cn/openfuyao/base/$BASE_TYPE
 
 # stage 1: build
 FROM $BUILDER_IMAGE AS build
+
+WORKDIR /go/src/app
+
+COPY console-service/ .
+
+RUN go build -o /go/bin/app -gcflags="all=" -ldflags="all=-w -s -buildid= -linkmode=external" "./cmd"
 
 # stage 2: release
 FROM $BASE_IMAGE AS release

@@ -25,16 +25,16 @@ WORKDIR /app
 ARG NPM_CONFIG_REGISTRY
 
 # instal dependenies
-RUN --mount=source=package.json,target=package.json \
-    --mount=source=package-lock.json,target=package-lock.json \
+RUN --mount=source=console-website/package.json,target=package.json \
+    --mount=source=console-website/package-lock.json,target=package-lock.json \
     npm ci
 
 # build project
-RUN --mount=source=package.json,target=package.json \
-    --mount=source=package-lock.json,target=package-lock.json \
-    --mount=source=index.html,target=index.html \
-    --mount=source=vite.config.js,target=vite.config.js \
-    --mount=source=src,target=src \
+RUN --mount=source=console-website/package.json,target=package.json \
+    --mount=source=console-website/package-lock.json,target=package-lock.json \
+    --mount=source=console-website/index.html,target=index.html \
+    --mount=source=console-website/vite.config.js,target=vite.config.js \
+    --mount=source=console-website/src,target=src \
     npm run build
 
 # stage 2: final
@@ -51,7 +51,7 @@ RUN groupadd -g ${GID} ${GROUP} && \
     useradd -u ${UID} -g ${GROUP} -s /sbin/nologin -M ${USER}
 
 COPY --link --from=build /app/dist /usr/share/nginx/html
-COPY --link build/nginx.conf /etc/nginx/nginx.conf
+COPY --link console-website/build/nginx.conf /etc/nginx/nginx.conf
 
 
 RUN touch /var/log/nginx/access.log && \
@@ -67,7 +67,7 @@ RUN chown -R ${USER}:${GROUP} /etc/nginx && \
 RUN chmod -R 500 /etc/nginx/ && \
     chmod 600 /var/log/nginx/access.log /var/log/nginx/error.log && \
     chmod 400 /etc/nginx/nginx.conf && \
-    chmod 600 /tmp/nginx.pid && \ 
+    chmod 600 /tmp/nginx.pid && \
     chmod -R 500 /usr/share/nginx/html
 
 USER ${USER}:${GROUP}
