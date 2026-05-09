@@ -19,31 +19,10 @@ metadata:
     nginx.ingress.kubernetes.io/limit-connections: "{{.Values.ingress.limitConnections}}"
     nginx.ingress.kubernetes.io/limit-burst: "{{.Values.ingress.limitBurst}}"
     nginx.ingress.kubernetes.io/limit-burst-multiplier: "{{.Values.ingress.limitBurstMultiplier}}"
-    {{- if .Values.console.basePath }}
-    nginx.ingress.kubernetes.io/rewrite-target: /$2
-    nginx.ingress.kubernetes.io/x-forwarded-prefix: {{ .Values.console.basePath }}
-    {{- end }}
 spec:
   rules:
     - http:
         paths:
-          {{- if .Values.console.basePath }}
-          - path: '{{ .Values.console.basePath }}(/|$)(.*)'
-            pathType: ImplementationSpecific
-            backend:
-              service:
-                name: console-service
-                port:
-                  number: 80
-          {{- else }}
-          - path: '/'
-            pathType: Prefix
-            backend:
-              service:
-                name: console-service
-                port:
-                  number: 80
-          {{- end }}
           {{- if .Values.console.basePath }}
           - path: '/rest'
             pathType: Prefix
@@ -73,5 +52,46 @@ spec:
                 name: console-service
                 port:
                   number: 80
+          {{- else }}
+          - path: '/'
+            pathType: Prefix
+            backend:
+              service:
+                name: console-service
+                port:
+                  number: 80
           {{- end }}
   ingressClassName: nginx
+---
+{{- if .Values.console.basePath }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: console-service-ingress-prefix
+  namespace: openfuyao-system
+  annotations:
+    {{- if .Values.config.enableHttps }}
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+    nginx.ingress.kubernetes.io/proxy-ssl-secret: {{.Values.ingress.secretName}}
+    nginx.ingress.kubernetes.io/proxy-ssl-name: console-service.openfuyao-system.svc.cluster.local
+    nginx.ingress.kubernetes.io/proxy-ssl-verify: "off"
+    nginx.ingress.kubernetes.io/proxy-ssl-verify-depth: "1"
+    nginx.ingress.kubernetes.io/proxy-ssl-protocols: {{.Values.ingress.sslProtocols}}
+    {{- else }}
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+    {{- end}}
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/x-forwarded-prefix: {{ .Values.console.basePath }}
+spec:
+  rules:
+    - http:
+        paths:
+          - path: '{{ .Values.console.basePath }}(/|$)(.*)'
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: console-service
+                port:
+                  number: 80
+  ingressClassName: nginx
+{{- end }}
