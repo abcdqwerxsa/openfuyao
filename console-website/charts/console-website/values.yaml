@@ -4,9 +4,9 @@
 
 images:
   core:
-    repository: cr.openfuyao.cn/openfuyao/console-website
+    repository: docker.cnb.cool/nilpotenter/docker/console-website
     pullPolicy: Always
-    tag: latest
+    tag: v1.0
 # resources: {}
 resources:
   requests: 
