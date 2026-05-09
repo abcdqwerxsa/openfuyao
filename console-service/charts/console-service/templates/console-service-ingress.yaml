@@ -19,6 +19,9 @@ metadata:
     nginx.ingress.kubernetes.io/limit-connections: "{{.Values.ingress.limitConnections}}"
     nginx.ingress.kubernetes.io/limit-burst: "{{.Values.ingress.limitBurst}}"
     nginx.ingress.kubernetes.io/limit-burst-multiplier: "{{.Values.ingress.limitBurstMultiplier}}"
+    {{- if .Values.console.basePath }}
+    nginx.ingress.kubernetes.io/x-forwarded-prefix: {{ .Values.console.basePath }}
+    {{- end }}
 spec:
   rules:
     - http:
