@@ -15,10 +15,8 @@
 ARG NODE_IMAGE=node:20.11.0-alpine
 ARG NGINX_IMAGE=openeuler/nginx:1.21.5-oe2203lts
 
-ARG BUILD_PLATFORM=$BUILDOS/amd64
-
-# stage 1: build
-FROM --platform=${BUILD_PLATFORM:-$BUILDPLATFORM} ${NODE_IMAGE} AS build
+# stage 1: build (always use amd64 to avoid esbuild crash under QEMU on arm64)
+FROM --platform=linux/amd64 ${NODE_IMAGE} AS build
 
 WORKDIR /app
 
