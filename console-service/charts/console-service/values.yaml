@@ -10,8 +10,8 @@ console:
 
 images:
   core:
-    repository: quay.io/nilpo1/console-service
-    tag: v1.0
+    repository: docker.cnb.cool/nilpotenter/docker/console-service
+    tag: v1.1
     pullPolicy: Always
   kubectl:
     repository: cr.openfuyao.cn/openfuyao/kubectl-openfuyao
