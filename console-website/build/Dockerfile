@@ -15,18 +15,27 @@
 ARG NODE_IMAGE=node:20.11.0-alpine
 ARG NGINX_IMAGE=openeuler/nginx:1.21.5-oe2203lts
 
+ARG BUILD_PLATFORM=$BUILDOS/amd64
+
 # stage 1: build
-FROM ${NODE_IMAGE} AS build
+FROM --platform=${BUILD_PLATFORM:-$BUILDPLATFORM} ${NODE_IMAGE} AS build
 
 WORKDIR /app
 
 ARG NPM_CONFIG_REGISTRY
 
-COPY package.json package-lock.json ./
-RUN npm ci
+# instal dependenies
+RUN --mount=source=package.json,target=package.json \
+    --mount=source=package-lock.json,target=package-lock.json \
+    npm ci
 
-COPY . .
-RUN npm run build
+# build project
+RUN --mount=source=package.json,target=package.json \
+    --mount=source=package-lock.json,target=package-lock.json \
+    --mount=source=index.html,target=index.html \
+    --mount=source=vite.config.js,target=vite.config.js \
+    --mount=source=src,target=src \
+    npm run build
 
 # stage 2: final
 FROM ${NGINX_IMAGE} AS final
