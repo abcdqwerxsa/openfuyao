@@ -234,5 +234,9 @@ func getReferrerURL(req *http.Request) string {
 	if referer := req.Header.Get("Referer"); referer != "" {
 		return referer
 	}
+	prefix := req.Header.Get("X-Forwarded-Prefix")
+	if prefix != "" {
+		return prefix + req.URL.String()
+	}
 	return req.URL.String()
 }
